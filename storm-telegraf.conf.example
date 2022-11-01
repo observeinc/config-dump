@@ -1,0 +1,26 @@
+[[inputs.socket_listener]]    
+  data_format = "graphite"
+  service_address = "tcp://:2003"
+  [inputs.socket_listener.tags]  
+    input_type = "graphite"
+
+[[inputs.prometheus]]    
+  kubernetes_services = [
+    "http://my-storm-supervisor-headless:8081/metrics",
+    "http://my-storm-nimbus-headless:8081/metrics",
+    "http://my-storm-ui:8081/metrics"
+  ]
+  [inputs.prometheus.tags]  
+    input_type = "prometheus"
+
+[[outputs.http]]
+	url = "https://<CUSTOMER_ID>.collect.observeinc.com:443/v1/http/telegraf"
+	timeout = "5s"
+	method = "POST"
+	insecure_skip_verify = true
+	data_format = "json"
+	content_encoding = "gzip"
+	[outputs.http.headers]
+		Content-Type = "application/json"
+		X-Observe-Decoder = "nested"
+		Authorization = "Bearer <TOKEN>"
